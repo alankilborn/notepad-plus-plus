@@ -1372,12 +1372,19 @@ void Notepad_plus::command(int id)
 		case IDM_SEARCH_VOLATILE_FINDNEXT :
 		case IDM_SEARCH_VOLATILE_FINDPREV :
 		{
-			TCHAR text2Find[MAX_PATH] = { '\0' };
-			_pEditView->getGenericSelectedText(text2Find, MAX_PATH);
+			bool isFirstTime = !_findReplaceDlg.isCreated();
+			if (isFirstTime)
+			{
+				_findReplaceDlg.doDialog(FIND_DLG, _nativeLangSpeaker.isRTL(), false);
+				_nativeLangSpeaker.changeFindReplaceDlgLang(_findReplaceDlg);
+			}
 
-			FindOption op;
-			op._isWholeWord = false;
+			TCHAR text2Find[FINDREPLACE_MAXLENGTH] = { '\0' };
+			_pEditView->getGenericSelectedText(text2Find, FINDREPLACE_MAXLENGTH);
+
+			FindOption op = _findReplaceDlg.getCurrentOptions();
 			op._whichDirection = (id == IDM_SEARCH_VOLATILE_FINDNEXT?DIR_DOWN:DIR_UP);
+			op._searchType = FindNormal;
 
 			FindStatus status = FSNoMessage;
 			_findReplaceDlg.processFindNext(text2Find, &op, &status);
