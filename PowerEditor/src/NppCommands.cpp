@@ -1376,18 +1376,22 @@ void Notepad_plus::command(int id)
 			if (isFirstTime)
 			{
 				_findReplaceDlg.doDialog(FIND_DLG, _nativeLangSpeaker.isRTL(), false);
+			}
+
+			const int strSize = FINDREPLACE_MAXLENGTH;
+			TCHAR str[strSize] = { '\0' };
+			_pEditView->getGenericSelectedText(str, strSize);
+			if (isFirstTime)
+			{
 				_nativeLangSpeaker.changeFindReplaceDlgLang(_findReplaceDlg);
 			}
 
-			TCHAR text2Find[FINDREPLACE_MAXLENGTH] = { '\0' };
-			_pEditView->getGenericSelectedText(text2Find, FINDREPLACE_MAXLENGTH);
-
 			FindOption op = _findReplaceDlg.getCurrentOptions();
-			op._whichDirection = (id == IDM_SEARCH_VOLATILE_FINDNEXT?DIR_DOWN:DIR_UP);
 			op._searchType = FindNormal;
+			op._whichDirection = (id == IDM_SEARCH_VOLATILE_FINDNEXT?DIR_DOWN:DIR_UP);
 
 			FindStatus status = FSNoMessage;
-			_findReplaceDlg.processFindNext(text2Find, &op, &status);
+			_findReplaceDlg.processFindNext(str, &op, &status);
 			if (status == FSEndReached)
 			{
 				generic_string msg = _nativeLangSpeaker.getLocalizedStrFromID("find-status-end-reached", TEXT("Find: Found the 1st occurrence from the top. The end of the document has been reached."));
